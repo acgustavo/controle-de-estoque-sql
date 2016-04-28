@@ -1,50 +1,49 @@
 package br.com.gu.jdbc;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.List;
 
-import com.mysql.jdbc.PreparedStatement;
+import javax.persistence.EntityManager;
 
 import br.com.gu.entidade.Produto;
 
 public class ProdutoDao {
-	private Connection connection;
-
-	public ProdutoDao() {
-		this.connection = new ConnectionFactory().getConnection();
-	}
+	EntityManager manager = new JPAUtil().getEntityManager();
 
 	public void adiciona(Produto produto) {
-		String sql = "insert into produtos " + "(nome, sku, valor_unitario, quantidade_estoque, categoria_id)" + " values (?,?,?,?,?)";
-
-		try {
-			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
-
-			stmt.setString(1, produto.getNome());
-			stmt.setString(2, produto.getSku());
-			stmt.setDouble(3, produto.getValorUnitario());
-			stmt.setDouble(4, produto.getQuantidadeEstoque());
-			stmt.setDouble(5, produto.getcId());
-			
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		manager.getTransaction().begin();
+		
+		manager.persist(produto);
+		
+		manager.getTransaction().commit();
 	}
-	
-	// removendo!!!!!
+
+	public void altera(Produto produto) {
+		manager.getTransaction().begin();
+		
+		manager.merge(produto);
+		
+		manager.getTransaction().commit();		
+	}
 
 	public void remove(Produto produto) {
-		try {
-			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement("delete from produtos where id=?");
+		manager.getTransaction().begin();
 
-			stmt.setLong(1, produto.getId());
+		manager.remove(produto);
+		
+		manager.getTransaction().commit();
 
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
 	}
+	
+	public List<Produto> todos() {
+	  return manager.createQuery("from Produto", Produto.class).getResultList();
+	}
+
+	public List<Produto> ordenadosPeloNome() {
+		return manager.createQuery("select c from Produto c order by c.nome", Produto.class).getResultList();
+	}	
+	
+	public Produto porId(Long id) {
+		return manager.find(Produto.class, id);
+	}
+
 }

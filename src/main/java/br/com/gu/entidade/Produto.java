@@ -1,32 +1,54 @@
 package br.com.gu.entidade;
 
-public class Produto {
-	private Long id;
-	private String nome;
-	private String sku;
-	private Double valorUnitario;
-	private Integer quantidadeEstoque;
-	private Categoria categoria;
-	private long cId;
+import java.math.BigDecimal;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "produtos")
+public class Produto {
+	
+	@Id
+	@GeneratedValue
+	private Long id;
+	
+	@Column(nullable = false)
+	private String nome;
+	
+	@Column(nullable = false, unique = true)
+	private String sku;
+	
+	@Column(nullable = false,  name = "valor_unitario")
+	private BigDecimal valorUnitario;
+
+	@Column(nullable = false,  name = "quantidade_estoque")
+	private int quantidadeEstoque;
+	
+	@ManyToOne
+	@JoinColumn(name = "categoria_id", nullable = false)
+	private Categoria categoria;
+
+
+	
+	
+	
+	
 	public Produto() {
 		super();
 	}
 
-	public Produto(String nome, String sku, Double valorUnitario, Integer quantidadeEstoque) {
+	public Produto(String nome, String sku, BigDecimal valorUnitario, int quantidadeEstoque) {
 		super();
 		this.nome = nome;
 		this.sku = sku;
 		this.valorUnitario = valorUnitario;
 		this.quantidadeEstoque = quantidadeEstoque;
-	}
-	
-	public long getcId() {
-		return cId;
-	}
-
-	public void setcId(long cId) {
-		this.cId = cId;
 	}
 
 	public Long getId() {
@@ -53,19 +75,19 @@ public class Produto {
 		this.sku = sku;
 	}
 
-	public Double getValorUnitario() {
+	public BigDecimal getValorUnitario() {
 		return valorUnitario;
 	}
 
-	public void setValorUnitario(Double valorUnitario) {
+	public void setValorUnitario(BigDecimal valorUnitario) {
 		this.valorUnitario = valorUnitario;
 	}
 
-	public Integer getQuantidadeEstoque() {
+	public int getQuantidadeEstoque() {
 		return quantidadeEstoque;
 	}
 
-	public void setQuantidadeEstoque(Integer quantidadeEstoque) {
+	public void setQuantidadeEstoque(int quantidadeEstoque) {
 		this.quantidadeEstoque = quantidadeEstoque;
 	}
 
@@ -77,13 +99,13 @@ public class Produto {
 		this.categoria = categoria;
 	}
 
-	@Override
-	public String toString() {
-		return ("Produto: " + nome + " " + sku + " Valor unitario: "
-				+ valorUnitario /*
-								 * + " Quantidade em estoque: " +
-								 * quantidadeEstoque + categoria
-								 */);
-	}
+//	@Override
+//	public String toString() {
+//		return ("Produto: " + nome + " " + sku + " Valor unitario: "
+//				+ valorUnitario /*
+//								 * + " Quantidade em estoque: " +
+//								 * quantidadeEstoque + categoria
+//								 */);
+//	}
 
 }

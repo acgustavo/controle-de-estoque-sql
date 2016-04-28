@@ -1,78 +1,102 @@
 package br.com.gu.entidade;
 
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
-public class Pedido {
-	private Long id;
-	private Date dataCriacao;
-	private String observacao;
-	private Date dataEntrega;
-	private Double valorFrete;
-	private Double valorDesconto;
-	private double valorTotal = new Double(0);
-	private StatusPedido status;
-	private Usuario vendedor;
-	private long usuarioid;
-	private Cliente cliente;
-	private long clienteid;
-	private Endereco enderecoEntrega;
-	private long enderecoid;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
+@Entity
+@Table(name = "pedidos")
+public class Pedido {
+	
+	@Id
+	@GeneratedValue
+	private Long id;
+	
+	@Column( name = "data_criacao")
+	@Temporal(TemporalType.DATE)
+	private Calendar dataCriacao;
+	
+	
+	private String observacao;
+	
+	@Column( name = "data_entrega")
+	@Temporal(TemporalType.DATE)
+	private Calendar dataEntrega;
+	
+	@Column(  name = "valor_frete")
+	private BigDecimal valorFrete;
+	
+	@Column(name = "valor_desconto")
+	private BigDecimal valorDesconto;
+	
+	@Column(name = "valor_total")
+	private BigDecimal valorTotal;
+	
+	@Enumerated(EnumType.STRING)
+	private StatusPedido status;
+	
+	
+	@ManyToOne
+	@JoinColumn(name = "usuario_id", nullable = false)
+	private Usuario vendedor;
+	
+	@ManyToOne
+	@JoinColumn(name = "cliente_id", nullable = false)
+	private Cliente cliente;
+	
+	@ManyToOne
+	@JoinColumn(name = "endereco_id", nullable = false)
+	private Endereco enderecoEntrega;
+	
+	@OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<ItemPedido> itens = new ArrayList<ItemPedido>();
 
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+	
+	
+	
+	
 	public Pedido() {
 		super();
 	}
 
-	public Pedido(Date dataCriacao, String observacao, int dataEntrega, Double valorFrete, Double valorDesconto,
-			StatusPedido status, long usuarioid, long clienteid, long enderecoid) {
+	public Pedido(Calendar dataCriacao, String observacao, Calendar dataEntrega, BigDecimal valorFrete, BigDecimal valorDesconto,
+			StatusPedido status, Usuario vendedor, Cliente cliente, Endereco enderecoEntrega) {
 		super();
 		this.dataCriacao = dataCriacao;
 		this.observacao = observacao;
-		setDataEntrega(dataEntrega);
+		this.dataEntrega =dataEntrega;
 		this.valorFrete = valorFrete;
 		this.valorDesconto = valorDesconto;
 		this.status = status;
-		this.usuarioid = usuarioid;
-		this.clienteid = clienteid;
-		this.enderecoid = enderecoid;
+		this.vendedor = vendedor;
+		this.cliente = cliente;
+		this.enderecoEntrega = enderecoEntrega;
 	}
 
-	public long getUsuarioid() {
-		return usuarioid;
+	
+	public StatusPedido getStatus() {
+		return status;
 	}
 
-	public void setUsuarioid(long usuarioid) {
-		this.usuarioid = usuarioid;
-	}
-
-	public long getClienteid() {
-		return clienteid;
-	}
-
-	public void setClienteid(long clienteid) {
-		this.clienteid = clienteid;
-	}
-
-	public long getEnderecoid() {
-		return enderecoid;
-	}
-
-	public void setEnderecoid(long enderecoid) {
-		this.enderecoid = enderecoid;
-	}
-
-	public void setDataEntrega(Date dataEntrega) {
-		this.dataEntrega = dataEntrega;
-	}
-
-	public void setValorTotal(double valorTotal) {
-		this.valorTotal = valorTotal;
+	public void setStatus(StatusPedido status) {
+		this.status = status;
 	}
 
 	public Long getId() {
@@ -83,11 +107,11 @@ public class Pedido {
 		this.id = id;
 	}
 
-	public String getDataCriacao() {
-		return sdf.format(dataCriacao);
+	public Calendar getDataCriacao() {
+		return dataCriacao;
 	}
 
-	public void setDataCriacao(Date dataCriacao) {
+	public void setDataCriacao(Calendar dataCriacao) {
 		this.dataCriacao = dataCriacao;
 	}
 
@@ -99,51 +123,36 @@ public class Pedido {
 		this.observacao = observacao;
 	}
 
-	public String getDataEntrega() {
-		return sdf.format(dataEntrega);
+	public Calendar getDataEntrega() {
+		return dataEntrega;
 	}
 
-	@SuppressWarnings("deprecation")
-	public void setDataEntrega(int dataEntrega) {
-		Date dE = new Date();
-		dE.setDate(dE.getDate() + dataEntrega);
-		this.dataEntrega = dE;
+	public void setDataEntrega(Calendar dataEntrega) {
+		this.dataEntrega = dataEntrega;
 	}
 
-	public Double getValorFrete() {
+	public BigDecimal getValorFrete() {
 		return valorFrete;
 	}
 
-	public void setValorFrete(Double valorFrete) {
+	public void setValorFrete(BigDecimal valorFrete) {
 		this.valorFrete = valorFrete;
 	}
 
-	public Double getValorDesconto() {
+	public BigDecimal getValorDesconto() {
 		return valorDesconto;
 	}
 
-	public void setValorDesconto(Double valorDesconto) {
-
-		this.valorDesconto = this.valorTotal - valorDesconto;
+	public void setValorDesconto(BigDecimal valorDesconto) {
+		this.valorDesconto = valorDesconto;
 	}
 
-	public Double getValorTotal() {
-//		valorTotal = 0;
-//		for (ItemPedido i : this.getItens())
-//			valorTotal += (i.getProduto().getValorUnitario() * i.getQuantidade());
+	public BigDecimal getValorTotal() {
 		return valorTotal;
 	}
 
-	public void setValorTotal(Double valorTotal) {
+	public void setValorTotal(BigDecimal valorTotal) {
 		this.valorTotal = valorTotal;
-	}
-
-	public StatusPedido getStatus() {
-		return status;
-	}
-
-	public void setStatus(StatusPedido status) {
-		this.status = status;
 	}
 
 	public Usuario getVendedor() {
@@ -177,5 +186,7 @@ public class Pedido {
 	public void setItens(List<ItemPedido> itens) {
 		this.itens = itens;
 	}
+
+	
 
 }

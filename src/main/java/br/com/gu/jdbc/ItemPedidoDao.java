@@ -1,50 +1,49 @@
 package br.com.gu.jdbc;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.List;
 
-import com.mysql.jdbc.PreparedStatement;
+import javax.persistence.EntityManager;
 
 import br.com.gu.entidade.ItemPedido;
 
 public class ItemPedidoDao {
-	private Connection connection;
-
-	public ItemPedidoDao() {
-		this.connection = new ConnectionFactory().getConnection();
-	}
+	EntityManager manager = new JPAUtil().getEntityManager();
 
 	public void adiciona(ItemPedido itemPedido) {
-		String sql = "insert into itens_pedidos " + "(quantidade, valor_unitario, produto_id, pedido_id)" + " values (?,?,?,?)";
-
-		try {
-			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
-
-			stmt.setLong(1, itemPedido.getQuantidade());
-			stmt.setDouble(2, itemPedido.getValorUnitario());
-			stmt.setLong(3, itemPedido.getProdutoid());
-			stmt.setLong(4, itemPedido.getPedidoid());
-			
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		manager.getTransaction().begin();
+		
+		manager.persist(itemPedido);
+		
+		manager.getTransaction().commit();
 	}
-	
-	// removendo!!!!!
+
+	public void altera(ItemPedido itemPedido) {
+		manager.getTransaction().begin();
+		
+		manager.merge(itemPedido);
+		
+		manager.getTransaction().commit();		
+	}
 
 	public void remove(ItemPedido itemPedido) {
-		try {
-			PreparedStatement stmt = (PreparedStatement) connection
-					.prepareStatement("delete from itens_pedidos where id=?");
+		manager.getTransaction().begin();
 
-			stmt.setLong(1, itemPedido.getId());
+		manager.remove(itemPedido);
+		
+		manager.getTransaction().commit();
 
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
 	}
+	
+	public List<ItemPedido> todos() {
+	  return manager.createQuery("from itens_pedidos", ItemPedido.class).getResultList();
+	}
+
+	public List<ItemPedido> ordenadosPeloNome() {
+		return manager.createQuery("select c from itens_pedido c order by c.nome", ItemPedido.class).getResultList();
+	}	
+	
+	public ItemPedido porId(Long id) {
+		return manager.find(ItemPedido.class, id);
+	}
+
 }

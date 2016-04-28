@@ -1,50 +1,49 @@
 package br.com.gu.jdbc;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.List;
 
-import com.mysql.jdbc.PreparedStatement;
+import javax.persistence.EntityManager;
 
 import br.com.gu.entidade.Cliente;
 
 public class ClienteDao {
-	private Connection connection;
-
-	public ClienteDao() {
-		this.connection = new ConnectionFactory().getConnection();
-	}
+	EntityManager manager = new JPAUtil().getEntityManager();
 
 	public void adiciona(Cliente cliente) {
-		String sql = "insert into Clientes" + "(nome, documento_receita_federal, email, tipo)" + " values (?,?,?,?)";
-
-		try {
-			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
-
-			stmt.setString(1, cliente.getNome());
-			stmt.setString(2, cliente.getDocumentoReceitaFederal());
-			stmt.setString(3, cliente.getEmail());
-			stmt.setString(4, (cliente.getTipo().toString()));
-
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		manager.getTransaction().begin();
+		
+		manager.persist(cliente);
+		
+		manager.getTransaction().commit();
 	}
 
-	// removendo!!!!!
+	public void altera(Cliente cliente) {
+		manager.getTransaction().begin();
+		
+		manager.merge(cliente);
+		
+		manager.getTransaction().commit();		
+	}
 
 	public void remove(Cliente cliente) {
-		try {
-			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement("delete from clientes where id=?");
+		manager.getTransaction().begin();
 
-			stmt.setLong(1, cliente.getId());
+		manager.remove(cliente);
+		
+		manager.getTransaction().commit();
 
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	}
+	
+	public List<Cliente> todos() {
+	  return manager.createQuery("from Cliente", Cliente.class).getResultList();
+	}
+
+	public List<Cliente> ordenadosPeloNome() {
+		return manager.createQuery("select c from Cliente c order by c.nome", Cliente.class).getResultList();
+	}	
+	
+	public Cliente porId(Long id) {
+		return manager.find(Cliente.class, id);
 	}
 
 }

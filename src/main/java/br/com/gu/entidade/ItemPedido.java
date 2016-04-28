@@ -1,40 +1,55 @@
 package br.com.gu.entidade;
 
-public class ItemPedido {
-	private Long id;
-	private Integer quantidade;
-	private Double valorUnitario;
-	private Produto produto;
-	private long produtoid;
-	private Pedido pedido;
-	private long pedidoid;
+import java.math.BigDecimal;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "itens_pedidos")
+public class ItemPedido {
+	
+	@Id
+	@GeneratedValue
+	private Long id;
+	
+	@Column(nullable = false)
+	private Integer quantidade;
+	
+	@Column(nullable = false,  name = "valor_unitario")
+	private BigDecimal valorUnitario;
+	
+
+	@ManyToOne
+	@JoinColumn(name = "produto_id", nullable = false)
+	private Produto produto;
+	
+
+	@ManyToOne
+	@JoinColumn(name = "pedido_id", nullable = false)
+	private Pedido pedido;
+	
+
+	
+	
+	
+	
+	
 	public ItemPedido() {
 		super();
 	}
 
-	public ItemPedido(Integer quantidade, Double valorUnitario, long produtoid, long pedidoid) {
+	public ItemPedido(Integer quantidade, BigDecimal valorUnitario, Produto produto, Pedido pedido) {
 		super();
 		this.quantidade = quantidade;
 		this.valorUnitario = valorUnitario;// = this.getProduto().getValorUnitario();
-		this.produtoid = produtoid;
-		this.pedidoid = pedidoid;
-	}
-
-	public long getProdutoid() {
-		return produtoid;
-	}
-
-	public void setProdutoid(long produtoid) {
-		this.produtoid = produtoid;
-	}
-
-	public long getPedidoid() {
-		return pedidoid;
-	}
-
-	public void setPedidoid(long pedidoid) {
-		this.pedidoid = pedidoid;
+		this.produto = produto;
+		this.pedido = pedido;
 	}
 
 	public Long getId() {
@@ -53,12 +68,12 @@ public class ItemPedido {
 		this.quantidade = quantidade;
 	}
 
-	public Double getValorUnitario() {
+	public BigDecimal getValorUnitario() {
 		return valorUnitario;
 	}
 
-	public void setValorUnitario(Double valorUnitario) {
-		valorUnitario = this.getProduto().getValorUnitario();
+	public void setValorUnitario(BigDecimal valorUnitario) {
+//		valorUnitario = this.getProduto().getValorUnitario();
 		this.valorUnitario = valorUnitario;
 	}
 
@@ -78,8 +93,8 @@ public class ItemPedido {
 		this.pedido = pedido;
 	}
 
-	@Override
-	public String toString() {
-		return (produto + " Quantidade: " + quantidade + " Valor: " + valorUnitario + "\n");
-	}
+//	@Override
+//	public String toString() {
+//		return (produto + " Quantidade: " + quantidade + " Valor: " + valorUnitario + "\n");
+//	}
 }

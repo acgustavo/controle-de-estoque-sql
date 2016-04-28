@@ -1,16 +1,49 @@
 package br.com.gu.entidade;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "enderecos")
 public class Endereco {
 
+	@Id
+	@GeneratedValue
 	private Long id;
+	
+	@Column(nullable = false)
 	private String logradouro;
+	
+	@Column(nullable = false)
 	private String numero;
+	
+	@Column(nullable = false)
 	private String complemento;
+	
+	@Column(nullable = false)
 	private String cidade;
+	
+	@Column(nullable = false)
 	private String uf;
+	
+	@Column(nullable = false)
 	private String cep;
+	
+	@ManyToOne
+	@JoinColumn(name = "cliente_id")
 	private Cliente cliente;
 
+	
+	
+	
+	
+	
+	
 	public Endereco() {
 		super();
 	}
@@ -89,10 +122,10 @@ public class Endereco {
 		this.cliente = cliente;
 	}
 
-	@Override
-	public String toString() {
-		return ("Logradouro: " + logradouro + " Numero: " + numero + " Complemento: " + complemento + " Cidade: "
-				+ cidade + " uf: " + uf + " CEP: " + cep);
-	}
+//	@Override
+//	public String toString() {
+//		return ("Logradouro: " + logradouro + " Numero: " + numero + " Complemento: " + complemento + " Cidade: "
+//				+ cidade + " uf: " + uf + " CEP: " + cep);
+//	}
 
 }

@@ -3,14 +3,40 @@ package br.com.gu.entidade;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "usuarios")
 public class Usuario {
 
+	@Id
+	@GeneratedValue
 	private Long id;
+	
+	@Column(nullable = false)
 	private String nome;
+	
+	@Column(nullable = false, unique = true)
 	private String email;
+	
+	@Column(nullable = false)
 	private String senha;
+	
+	@ManyToMany(mappedBy = "usuarios", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Grupo> grupos = new ArrayList<Grupo>();
 
+	
+	
+	
+	
+	
 	public Usuario() {
 		super();
 	}
@@ -62,8 +88,8 @@ public class Usuario {
 		this.grupos = grupos;
 	}
 
-	@Override
-	public String toString() {
-		return ("Usuario: " + nome + " ");
-	}
+//	@Override
+//	public String toString() {
+//		return ("Usuario: " + nome + " ");
+//	}
 }
